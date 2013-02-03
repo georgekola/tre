@@ -1,8 +1,9 @@
 ## Process this file with automake to produce Makefile.in
-
-lib_LTLIBRARIES = libtre.la
-libtre_la_LDFLAGS = -no-undefined -version-info 5:0:0 $(LDFLAGS)
-libtre_la_LIBADD = $(LTLIBINTL)
+CC=clang
+AM_CFLAGS=-O3 -pipe -B/usr/lib/gold-ld/ -fpic -ffunction-sections -fdata-sections -flto
+AM_LDFLAGS=-Wl,--gc-sections,-O1,--as-needed -flto -fuse-linker-plugin
+noinst_LIBRARIES = libtre.a
+libtre_a_CFLAGS = ${AM_CFLAGS}
 
 noinst_HEADERS =		\
 	tre-ast.h		\
@@ -14,7 +15,7 @@ noinst_HEADERS =		\
 	tre-stack.h		\
 	xmalloc.h
 
-libtre_la_SOURCES =		\
+libtre_a_SOURCES =		\
 	tre-ast.c		\
 	tre-compile.c		\
 	tre-match-backtrack.c	\
@@ -24,11 +25,10 @@ libtre_la_SOURCES =		\
 	tre-stack.c		\
 	regcomp.c		\
 	regexec.c		\
-	regerror.c
+	regerror.c              \
+        tre-match-approx.c
 
-if TRE_APPROX
-libtre_la_SOURCES += tre-match-approx.c
-endif TRE_APPROX
+
 
 dist_pkginclude_HEADERS = tre.h regex.h
 nodist_pkginclude_HEADERS = tre-config.h
